@@ -242,6 +242,27 @@ body{
     margin-top: 10px;
 }
 
+.alert{
+    display: block;
+    background: #936eb1;
+    position: fixed;
+    top: 20%;
+    left: 40%;
+    border-radius: 5px;
+    box-shadow: 0px 10px 30px black;
+
+    transition-duration: 1s;
+	transition-property: transform;
+
+    transform: translateZ(0);
+    transform: scale(1.1);
+    padding: 5px;
+    color: white;
+}
+.alert >span{
+    color: salmon;
+}
+
 .display-none{
     display: none;
 }

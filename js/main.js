@@ -4,6 +4,9 @@ const films = localFilms || filmes;
 const localDeletedFilms = JSON.parse(window.localStorage.getItem("deletedFilm"));
 const deletedFilmArr = localDeletedFilms || [];
 
+const localBookmarkedFilms = JSON.parse(window.localStorage.getItem("bookmarkedFilm"));
+const bookmarks = localBookmarkedFilms || [];
+
 let header = document.createElement("header");
 header.classList.add("header");
 document.body.appendChild(header);
@@ -66,6 +69,8 @@ let moviesList = document.createElement("ol");
 moviesList.classList.add("list");
 main.appendChild(moviesList);
 
+let modalArr = [];
+
 let modal = document.createElement("div");
 modal.classList.add("modal");
 document.body.appendChild(modal);
@@ -117,8 +122,6 @@ header.appendChild(deletedFilmsBtn);
 let deletedFilmsCount = document.createElement("strong");
 deletedFilmsBtn.appendChild(deletedFilmsCount);
 
-const bookmarks = [];
-
 let bookmarkFilmsBtn = document.createElement("button");
 bookmarkFilmsBtn.classList.add("bookmark-films-container","display-none");
 bookmarkFilmsBtn.textContent = "Bookmark";
@@ -127,7 +130,10 @@ header.appendChild(bookmarkFilmsBtn);
 let bookmarkFilmsCount = document.createElement("strong");
 bookmarkFilmsBtn.appendChild(bookmarkFilmsCount);
 
-let modalArr = [];
+let alert = document.createElement("div");
+alert.classList.add("display-none","alert");
+alert.innerHTML = `film <span id="kino">kino nomi</span> sucsesfully deleted!`;
+document.body.appendChild(alert);
 
 function getTime(obj){
   var date = new Date(obj.release_date);
@@ -207,6 +213,7 @@ moviesList.addEventListener("click", evt =>{
 
     bookmarks.splice(findIndexArr, 1);
     filterBookmarks(bookmarks, moviesList);
+    window.localStorage.setItem("bookmarkedFilm" , JSON.stringify(bookmarks))
     bookmarkFilmsCount.textContent = bookmarks.length;
 
     if(bookmarks.length == 0){
@@ -246,6 +253,8 @@ moviesList.addEventListener("click", evt =>{
     deletedFilm.forEach(g =>{
       let s = {id: g.id, poster: g.poster, title: g.title, overview: g.overview, release_date: g.release_date, genres: g.genres,}
 
+      alert.classList.remove("display-none");
+      kino.textContent = g.title.substr(0,20) + "...";
       deletedFilmArr.push(s);
       deletedFilmsCount.textContent = deletedFilmArr.length;
     })
@@ -272,12 +281,18 @@ moviesList.addEventListener("click", evt =>{
     bookmarkFilmsBtn.classList.add("display-block");
 
     filterFilms(films, moviesList);
+    window.localStorage.setItem("bookmarkedFilm" , JSON.stringify(bookmarks))
   }
 })
 
 if(deletedFilmArr.length >= 1){
     deletedFilmsBtn.classList.remove("display-none");
     deletedFilmsCount.textContent = deletedFilmArr.length;
+}
+
+if(bookmarks.length >= 1){
+  bookmarkFilmsBtn.classList.remove("display-none");
+  bookmarkFilmsCount.textContent = bookmarks.length;
 }
 modal.addEventListener("click", evt =>{
   if(evt.target.matches(".modal-closer")){
