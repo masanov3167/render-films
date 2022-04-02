@@ -52,10 +52,6 @@ sortByName.setAttribute("value","name");
 sortByName.textContent = "Sort by name";
 sort.appendChild(sortByName);
 
-let addFilm = document.createElement("div");
-addFilm.classList.add("add-film");
-document.body.appendChild(addFilm);
-
 let main = document.createElement("main");
 main.classList.add("main");
 document.body.appendChild(main);
@@ -100,6 +96,7 @@ modalBody.appendChild(modalBtnContainer);
 
 let wiewFilm = document.createElement("li");
 wiewFilm.textContent = "Wiew film";
+wiewFilm.classList.add("movies-wiew");
 modalBtnContainer.appendChild(wiewFilm);
 
 let copyUrl = document.createElement("li");
@@ -279,6 +276,13 @@ modal.addEventListener("click", evt =>{
     modal.classList.remove("show");
     main.style.opacity = 1;
   }
+
+  if(evt.target.matches(".movies-wiew")){
+    modal.classList.remove("show");
+    main.style.opacity = 1;
+    window.open("https://youtu.be/0EXhCEGblq0")
+  }
+
 })
 
 function filterBookmarks(array, obj){
