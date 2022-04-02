@@ -1,9 +1,7 @@
 const localFilms = JSON.parse(window.localStorage.getItem("film"));
 const films = localFilms || filmes;
 
-const localDeletedFilms = JSON.parse(window.localStorage.getItem("deletedFilm"));
-const deletedFilmsArr = [];
-const deletedFilmArr = localDeletedFilms || deletedFilmsArr;
+const deletedFilmArr = [];
 
 let header = document.createElement("header");
 header.classList.add("header");
@@ -246,7 +244,7 @@ moviesList.addEventListener("click", evt =>{
     deletedFilm.forEach(g =>{
       let s = {id: g.id, poster: g.poster, title: g.title, overview: g.overview, release_date: g.release_date, genres: g.genres,}
 
-      deletedFilmsArr.push(s);
+      deletedFilmArr.push(s);
       deletedFilmsCount.textContent = deletedFilmArr.length;
     })
 
@@ -254,6 +252,7 @@ moviesList.addEventListener("click", evt =>{
     deletedFilmsBtn.classList.add("display-block");
     filterFilms(films, moviesList);
     window.localStorage.setItem("film" , JSON.stringify(films))
+    window.localStorage.setItem("deletedFilm" , JSON.stringify(deletedFilmArr))
   }
 
   if(evt.target.matches(".movies-top-btn")){
@@ -496,12 +495,10 @@ sort.addEventListener("change", evt => {
 header.addEventListener("click", evt =>{
   if(evt.target.matches(".deleted-films-container")){
     filterDeletedFilms(deletedFilmArr, moviesList);
-    window.localStorage.setItem("deletedFilm" , JSON.stringify(deletedFilmArr));
+    // window.localStorage.setItem("deletedFilm" , JSON.stringify(deletedFilmArr));
   };
 
   if(evt.target.matches(".bookmark-films-container")){
     filterBookmarks(bookmarks, moviesList);
   };
 })
-
-window.localStorage.setItem("deletedFilm" , JSON.stringify(deletedFilmArr))
