@@ -1,3 +1,10 @@
+const localFilms = JSON.parse(window.localStorage.getItem("film"));
+const films = localFilms || filmes;
+
+const localDeletedFilms = JSON.parse(window.localStorage.getItem("deletedFilm"));
+const deletedFilmsArr = [];
+const deletedFilmArr = localDeletedFilms || deletedFilmsArr;
+
 let header = document.createElement("header");
 header.classList.add("header");
 document.body.appendChild(header);
@@ -103,8 +110,6 @@ let copyUrl = document.createElement("li");
 copyUrl.textContent = "Copy url";
 modalBtnContainer.appendChild(copyUrl);
 
-const deletedFilmArr = [];
-
 let deletedFilmsBtn = document.createElement("button");
 deletedFilmsBtn.classList.add("deleted-films-container","display-none");
 deletedFilmsBtn.textContent = "Deleted films";
@@ -140,8 +145,6 @@ moviesList.addEventListener("click", evt =>{
     const findIndexArr = deletedFilmArr.find(todo => todo.id == moreBtnId);
     modal.classList.add("show");
     modalArr.push(findIndexArr);
-
-    console.log(modalArr);
 
     modalArr.forEach(a =>{
       modalImg.setAttribute("src", a.poster);
@@ -233,24 +236,24 @@ moviesList.addEventListener("click", evt =>{
     })
   }
 
+
   if(evt.target.matches(".movies-delete-btn")){
     const deleteBtnId = evt.target.dataset.moviesDeleteBtnId;
 
     const findIndexArr = films.findIndex(todo => todo.id == deleteBtnId);
-    console.log(findIndexArr);
 
     let deletedFilm = films.splice(findIndexArr, 1);
     deletedFilm.forEach(g =>{
       let s = {id: g.id, poster: g.poster, title: g.title, overview: g.overview, release_date: g.release_date, genres: g.genres,}
 
-      deletedFilmArr.push(s);
+      deletedFilmsArr.push(s);
       deletedFilmsCount.textContent = deletedFilmArr.length;
     })
 
     deletedFilmsBtn.classList.remove("display-none");
     deletedFilmsBtn.classList.add("display-block");
-
     filterFilms(films, moviesList);
+    window.localStorage.setItem("film" , JSON.stringify(films))
   }
 
   if(evt.target.matches(".movies-top-btn")){
@@ -493,6 +496,7 @@ sort.addEventListener("change", evt => {
 header.addEventListener("click", evt =>{
   if(evt.target.matches(".deleted-films-container")){
     filterDeletedFilms(deletedFilmArr, moviesList);
+    window.localStorage.setItem("deletedFilm" , JSON.stringify(deletedFilmArr));
   };
 
   if(evt.target.matches(".bookmark-films-container")){
@@ -500,3 +504,4 @@ header.addEventListener("click", evt =>{
   };
 })
 
+window.localStorage.setItem("deletedFilm" , JSON.stringify(deletedFilmArr))
