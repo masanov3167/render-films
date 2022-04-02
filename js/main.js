@@ -172,6 +172,7 @@ moviesList.addEventListener("click", evt =>{
     deletedFilmsBtn.classList.add("display-block");
 
     filterDeletedFilms(deletedFilmArr, moviesList);
+    window.localStorage.setItem("deletedFilm" , JSON.stringify(deletedFilmArr))
     if(deletedFilmArr.length == 0){
       filterFilms(films,moviesList);
       deletedFilmsBtn.classList.remove("display-block");
