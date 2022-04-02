@@ -1,7 +1,8 @@
 const localFilms = JSON.parse(window.localStorage.getItem("film"));
 const films = localFilms || filmes;
 
-const deletedFilmArr = [];
+const localDeletedFilms = JSON.parse(window.localStorage.getItem("deletedFilm"));
+const deletedFilmArr = localDeletedFilms || [];
 
 let header = document.createElement("header");
 header.classList.add("header");
@@ -273,6 +274,10 @@ moviesList.addEventListener("click", evt =>{
   }
 })
 
+if(deletedFilmArr.length >= 1){
+    deletedFilmsBtn.classList.remove("display-none");
+    deletedFilmsCount.textContent = deletedFilmArr.length;
+}
 modal.addEventListener("click", evt =>{
   if(evt.target.matches(".modal-closer")){
     modal.classList.remove("show");
@@ -495,7 +500,7 @@ sort.addEventListener("change", evt => {
 header.addEventListener("click", evt =>{
   if(evt.target.matches(".deleted-films-container")){
     filterDeletedFilms(deletedFilmArr, moviesList);
-    // window.localStorage.setItem("deletedFilm" , JSON.stringify(deletedFilmArr));
+    window.localStorage.setItem("deletedFilm" , JSON.stringify(deletedFilmArr));
   };
 
   if(evt.target.matches(".bookmark-films-container")){
