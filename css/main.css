@@ -241,6 +241,11 @@ body{
     justify-content: space-around;
     margin-top: 10px;
 }
+.modal-btn-container >li{
+    padding: 5px;
+    width: auto;
+    margin: 0;
+}
 
 .alert{
     display: block;
@@ -285,4 +290,61 @@ body{
 }
 .display-block{
     display: block;
+}
+
+@media only screen and (min-width: 300px) and (max-width: 450px){
+    .header{
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+    .select, .sort, .bookmark-films-container, .deleted-films-container{
+        margin-top: 10px;
+    }
+    .main{
+        margin-top: 270px;
+    }
+    .list{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .alert{
+        width: 90%;
+        overflow-x: hidden;
+        text-align: center;
+        top: 310px;
+        left: 5%;
+    }
+
+    .modal{
+        display: flex;
+        justify-content: space-between;
+        flex-direction: column;
+        width: 90%;
+        height: 280px;
+        top: 150px;
+        left: 5%;
+        z-index: 5;
+        border-radius: 5px;
+        padding: 10px;
+    }
+    .modal-img{
+        display: none;
+    }
+    .modal-body{
+        width: 100%;
+    }
+
+    .video{
+        width: 100%;
+        height: 100%;
+        border-radius: 0 15px 0 15px;
+    }
+    .video-closer{
+        width: 25px;
+        height: 25px;
+        right: 15px;
+    }
 }

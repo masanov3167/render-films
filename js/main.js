@@ -110,9 +110,10 @@ wiewFilm.textContent = "Wiew film";
 wiewFilm.classList.add("movies-wiew");
 modalBtnContainer.appendChild(wiewFilm);
 
-let copyUrl = document.createElement("li");
-copyUrl.textContent = "Copy url";
-modalBtnContainer.appendChild(copyUrl);
+let closeMenu = document.createElement("li");
+closeMenu.textContent = "Close menu";
+closeMenu.classList.add("modal-closer");
+modalBtnContainer.appendChild(closeMenu);
 
 let deletedFilmsBtn = document.createElement("button");
 deletedFilmsBtn.classList.add("deleted-films-container","display-none");
@@ -142,6 +143,9 @@ let videoCloser = document.createElement("div");
 videoCloser.classList.add("video-closer");
 modal.appendChild(videoCloser);
 
+let deleted = [];
+let bookmarked = [];
+
 function getTime(obj){
   var date = new Date(obj.release_date);
   var day = date.getDate();
@@ -155,14 +159,19 @@ moviesList.addEventListener("click", evt =>{
     main.style.opacity = 0.2;
 
     const findIndexArr = deletedFilmArr.find(todo => todo.id == moreBtnId);
-    modal.classList.add("show");
-    modalArr.push(findIndexArr);
 
-    modalArr.forEach(a =>{
+    modal.classList.add("show");
+    modalBody.classList.remove("display-none");
+    modalImg.classList.remove("display-none");
+    video.classList.add("display-none")
+    videoCloser.classList.add("display-none");
+    deleted.push(findIndexArr);
+
+    deleted.forEach(a =>{
       modalImg.setAttribute("src", a.poster);
       modalDate.textContent = getTime(a);
       modalTitle.textContent = a.title;
-      modalInfo.textContent = a.overview.substr(0,329) + "...";
+      modalInfo.textContent = a.overview.substr(0,322) + "...";
       modalGenres.textContent = a.genres.join(", ");
     })
   }
@@ -207,15 +216,18 @@ moviesList.addEventListener("click", evt =>{
 
     const findIndexArr = bookmarks.find(todo => todo.id == moreBtnId);
     modal.classList.add("show");
-    modalArr.push(findIndexArr);
+    modalBody.classList.remove("display-none");
+    modalImg.classList.remove("display-none");
+    video.classList.add("display-none")
+    videoCloser.classList.add("display-none");
 
-    console.log(modalArr);
+    bookmarked.push(findIndexArr);
 
-    modalArr.forEach(a =>{
+    bookmarked.forEach(a =>{
       modalImg.setAttribute("src", a.poster);
       modalDate.textContent = getTime(a);
       modalTitle.textContent = a.title;
-      modalInfo.textContent = a.overview.substr(0,329) + "...";
+      modalInfo.textContent = a.overview.substr(0,322) + "...";
       modalGenres.textContent = a.genres.join(", ");
     })
   }
@@ -252,24 +264,25 @@ moviesList.addEventListener("click", evt =>{
     main.style.opacity = 0.2;
 
     const findIndexArr = films.find(todo => todo.id == moreBtnId);
-    modal.classList.add("show");
-    modalBody.classList.remove("display-none");
-    modalImg.classList.remove("display-none");
-    // video.classList.remove("display-block");
-    video.classList.add("display-none");
-    modal.appendChild(video);
     modalArr.push(findIndexArr);
 
-    console.log(modalArr);
-
+    
     modalArr.forEach(a =>{
       modalImg.setAttribute("src", a.poster);
       
       modalDate.textContent = getTime(a);
       modalTitle.textContent = a.title;
-      modalInfo.textContent = a.overview.substr(0,329) + "...";
+      modalInfo.textContent = a.overview.substr(0,322) + "...";
       modalGenres.textContent = a.genres.join(", ");
+
+      wiewFilm.dataset.wiewFilmId = a.id;
     })
+
+    modal.classList.add("show");
+    modalBody.classList.remove("display-none");
+    modalImg.classList.remove("display-none");
+    video.classList.add("display-none")
+    videoCloser.classList.add("display-none")
   }
 
 
@@ -353,15 +366,27 @@ modal.addEventListener("click", evt =>{
   }
 
   if(evt.target.matches(".movies-wiew")){
+    const wiewId = evt.target.dataset.wiewFilmId;
+    main.style.opacity = 0.2;
+
+    const findIndexArr = films.find(todo => todo.id == wiewId);
+    modalArr.push(findIndexArr);
+
+    modalArr.forEach(a =>{
+      let iframeUrl = a.url.substr(17);
+      video.setAttribute("src", "https://www.youtube-nocookie.com/embed/" + iframeUrl);
+    });
+
     modalImg.classList.add("display-none");
     modalBody.classList.add("display-none");
     main.style.opacity = 0.1;
-    // window.open("https://youtu.be/0EXhCEGblq0")
     video.classList.remove("display-none");
-    video.setAttribute("src", "https://www.youtube.com/embed/0EXhCEGblq0")
+    videoCloser.classList.remove("display-none");
+    modal.appendChild(video);
   }
 
 })
+
 
 function filterBookmarks(array, obj){
   obj.innerHTML = "";
