@@ -1,12 +1,3 @@
-const localFilms = JSON.parse(window.localStorage.getItem("film"));
-const films = localFilms || filmes;
-
-const localDeletedFilms = JSON.parse(window.localStorage.getItem("deletedFilm"));
-const deletedFilmArr = localDeletedFilms || [];
-
-const localBookmarkedFilms = JSON.parse(window.localStorage.getItem("bookmarkedFilm"));
-const bookmarks = localBookmarkedFilms || [];
-
 let header = document.createElement("header");
 header.classList.add("header");
 document.body.appendChild(header);
@@ -68,8 +59,6 @@ document.body.appendChild(main);
 let moviesList = document.createElement("ol");
 moviesList.classList.add("list");
 main.appendChild(moviesList);
-
-let modalArr = [];
 
 let modal = document.createElement("div");
 modal.classList.add("modal");
@@ -133,7 +122,6 @@ bookmarkFilmsBtn.appendChild(bookmarkFilmsCount);
 
 let alert = document.createElement("div");
 alert.classList.add("display-none","alert");
-// alert.innerHTML = `film <span id="kino">kino nomi</span> sucsesfully deleted!`;
 document.body.appendChild(alert);
 
 let video = document.createElement("iframe");
@@ -143,16 +131,6 @@ let videoCloser = document.createElement("div");
 videoCloser.classList.add("video-closer");
 modal.appendChild(videoCloser);
 
-let deleted = [];
-let bookmarked = [];
-
-function getTime(obj){
-  var date = new Date(obj.release_date);
-  var day = date.getDate();
-  var month = String(date.getMonth() +1).padStart(2,0);
-  var year = date.getFullYear();
-  return `${day}.${month}.${year}`;
-}
 moviesList.addEventListener("click", evt =>{
   if(evt.target.matches(".deleted-films-more-btn")){
     const moreBtnId = evt.target.dataset.deletedFilmsMoreBtnId;
@@ -173,6 +151,8 @@ moviesList.addEventListener("click", evt =>{
       modalTitle.textContent = a.title;
       modalInfo.textContent = a.overview.substr(0,322) + "...";
       modalGenres.textContent = a.genres.join(", ");
+
+      wiewFilm.dataset.wiewFilmId = a.id;
     })
   }
 
@@ -180,20 +160,16 @@ moviesList.addEventListener("click", evt =>{
     const deleteBtnId = evt.target.dataset.deletedFilmsRememorateBtnId;
 
     const findIndexArr = deletedFilmArr.findIndex(todo => todo.id == deleteBtnId);
-    console.log(findIndexArr);
+    const findFilm = deletedFilmArr.find(todo => todo.id == deleteBtnId);
 
     let deletedFilm = deletedFilmArr.splice(findIndexArr, 1);
     deletedFilm.forEach(g =>{
-      let s = {id: g.id, poster: g.poster, title: g.title, overview: g.overview, release_date: g.release_date, genres: g.genres,}
 
       alert.classList.remove("display-none");
-      alert.innerHTML = `film <span>${g.title.substr(0,20) + "..."}</span> sucsesfully rememorated!`;
+      alert.innerHTML = `film <span>${g.title.substr(0,20) + "..."}</span> succesfully rememorated!`;
       main.style.opacity = 0.2;
-      setTimeout(function(){
-        alert.classList.add("display-none");
-        main.style.opacity = 1;
-      }, 2500);
-      films.push(s);
+      setTime();
+      films.push(findFilm);
       deletedFilmsCount.textContent = deletedFilmArr.length;
     })
 
@@ -229,6 +205,8 @@ moviesList.addEventListener("click", evt =>{
       modalTitle.textContent = a.title;
       modalInfo.textContent = a.overview.substr(0,322) + "...";
       modalGenres.textContent = a.genres.join(", ");
+
+      wiewFilm.dataset.wiewFilmId = a.id;
     })
   }
 
@@ -243,10 +221,7 @@ moviesList.addEventListener("click", evt =>{
       alert.classList.remove("display-none");
       alert.innerHTML = `film <span>${b.title.substr(0,20) + "..."}</span> removed on bookmark list`;
       main.style.opacity = 0.2;
-      setTimeout(function(){
-        alert.classList.add("display-none");
-        main.style.opacity = 1;
-      }, 2500);
+      setTime();
     })
     filterBookmarks(bookmarks, moviesList);
     window.localStorage.setItem("bookmarkedFilm" , JSON.stringify(bookmarks))
@@ -290,20 +265,18 @@ moviesList.addEventListener("click", evt =>{
     const deleteBtnId = evt.target.dataset.moviesDeleteBtnId;
 
     const findIndexArr = films.findIndex(todo => todo.id == deleteBtnId);
+    const findFilm = films.find(todo => todo.id == deleteBtnId);
 
     let deletedFilm = films.splice(findIndexArr, 1);
     deletedFilm.forEach(g =>{
-      let s = {id: g.id, poster: g.poster, title: g.title, overview: g.overview, release_date: g.release_date, genres: g.genres,}
-
       alert.classList.remove("display-none");
-      alert.innerHTML = `film <span>${g.title.substr(0,20) + "..."}</span> sucsesfully deleted!`;
+      alert.innerHTML = `film <span>${g.title.substr(0,20) + "..."}</span> succesfully deleted!`;
       main.style.opacity = 0.2;
-      setTimeout(function(){
-        alert.classList.add("display-none");
-        main.style.opacity = 1;
-      }, 2500);
+      setTime();
 
-      deletedFilmArr.push(s);
+      wiewFilm.dataset.wiewFilmId = g.id;
+
+      deletedFilmArr.push(findFilm);
       deletedFilmsCount.textContent = deletedFilmArr.length;
     })
 
@@ -328,10 +301,7 @@ moviesList.addEventListener("click", evt =>{
             alert.classList.remove("display-none");
             alert.innerHTML = `film <span>${b.title.substr(0,20) + "..."}</span> added to bookmark list`;
             main.style.opacity = 0.2;
-            setTimeout(function(){
-              alert.classList.add("display-none");
-              main.style.opacity = 1;
-            }, 2500);
+            setTime();
           })
         }
 
@@ -364,242 +334,31 @@ modal.addEventListener("click", evt =>{
     modal.removeChild(video);
     main.style.opacity = 1;
   }
-
-  if(evt.target.matches(".movies-wiew")){
-    const wiewId = evt.target.dataset.wiewFilmId;
-    main.style.opacity = 0.2;
-
-    const findIndexArr = films.find(todo => todo.id == wiewId);
-    modalArr.push(findIndexArr);
-
-    modalArr.forEach(a =>{
-      let iframeUrl = a.url.substr(17);
-      video.setAttribute("src", "https://www.youtube-nocookie.com/embed/" + iframeUrl);
-    });
-
-    modalImg.classList.add("display-none");
-    modalBody.classList.add("display-none");
-    main.style.opacity = 0.1;
-    video.classList.remove("display-none");
-    videoCloser.classList.remove("display-none");
-    modal.appendChild(video);
-  }
-
-})
-
-
-function filterBookmarks(array, obj){
-  obj.innerHTML = "";
- 
-   array.forEach(movies =>{
-     let moviesItem = document.createElement("li");
-     moviesItem.classList.add("list-item");
-     obj.appendChild(moviesItem);
-
-     let moviesItemBodyId = document.createElement("time");
-     moviesItemBodyId.classList.add("list-item-id");
-     moviesItemBodyId.textContent = movies.id;
-     moviesItem.appendChild(moviesItemBodyId);
-
-     let moviesItemImg = document.createElement("img");
-     moviesItemImg.classList.add("list-item-img");
-     moviesItemImg.setAttribute("src", movies.poster);
-     moviesItem.appendChild(moviesItemImg);
-
-     let moviesItemBody = document.createElement("div");
-     moviesItemBody.classList.add("list-item-body");
-     moviesItem.appendChild(moviesItemBody);
-
-     let moviesItemBodyTitle = document.createElement("h3");
-     moviesItemBodyTitle.textContent = movies.title;
-     moviesItemBodyTitle.classList.add("list-item-body-title");
-     moviesItemBody.appendChild(moviesItemBodyTitle);
-
-     let moviesBtnContainer = document.createElement("ol");
-     moviesBtnContainer.classList.add("movies-btn-container");
-     moviesItemBody.appendChild(moviesBtnContainer);
-
-     let moviesMoreBtn = document.createElement("li");
-     moviesMoreBtn.classList.add("bookmarks-more-btn");
-     moviesMoreBtn.dataset.bookmarksMoreBtnId = movies.id;
-     moviesMoreBtn.textContent = "More";
-     moviesBtnContainer.appendChild(moviesMoreBtn);
-
-     let moviesDeleteBtn = document.createElement("li");
-     moviesDeleteBtn.classList.add("bookmarks-delete-btn");
-     moviesDeleteBtn.dataset.bookmarksDeleteBtnId = movies.id;
-     moviesDeleteBtn.textContent = "Delete";
-     moviesBtnContainer.appendChild(moviesDeleteBtn);
-   });
- }
-
- function filterDeletedFilms(array, obj){
-  obj.innerHTML = "";
- 
-   array.forEach(movies =>{
-     let moviesItem = document.createElement("li");
-     moviesItem.classList.add("list-item");
-     obj.appendChild(moviesItem);
-
-     let moviesItemBodyId = document.createElement("time");
-     moviesItemBodyId.classList.add("list-item-id");
-     moviesItemBodyId.textContent = movies.id;
-     moviesItem.appendChild(moviesItemBodyId);
-
-     let moviesItemImg = document.createElement("img");
-     moviesItemImg.classList.add("list-item-img");
-     moviesItemImg.setAttribute("src", movies.poster);
-     moviesItem.appendChild(moviesItemImg);
-
-     let moviesItemBody = document.createElement("div");
-     moviesItemBody.classList.add("list-item-body");
-     moviesItem.appendChild(moviesItemBody);
-
-     let moviesItemBodyTitle = document.createElement("h3");
-     moviesItemBodyTitle.textContent = movies.title;
-     moviesItemBodyTitle.classList.add("list-item-body-title");
-     moviesItemBody.appendChild(moviesItemBodyTitle);
-
-     let moviesBtnContainer = document.createElement("ol");
-     moviesBtnContainer.classList.add("movies-btn-container");
-     moviesItemBody.appendChild(moviesBtnContainer);
-
-     let moviesMoreBtn = document.createElement("li");
-     moviesMoreBtn.classList.add("deleted-films-more-btn");
-     moviesMoreBtn.dataset.deletedFilmsMoreBtnId = movies.id;
-     moviesMoreBtn.textContent = "More";
-     moviesBtnContainer.appendChild(moviesMoreBtn);
-
-     let moviesDeleteBtn = document.createElement("li");
-     moviesDeleteBtn.classList.add("deleted-films-rememorate-btn");
-     moviesDeleteBtn.dataset.deletedFilmsRememorateBtnId = movies.id;
-     moviesDeleteBtn.textContent = "Rememorate";
-     moviesBtnContainer.appendChild(moviesDeleteBtn);
-   });
- }
-
- function filterGenres(array , obj){
-    let filteredGenres = [];
-    array.forEach((film) => {
-      film.genres.forEach(genreArr => {
-        if(!filteredGenres.includes(genreArr)){
-          filteredGenres.push(genreArr);
-        }
-      });
-    });
-
-    filteredGenres.forEach(genres => {
-      let selectOption = document.createElement("option");
-      selectOption.setAttribute("value", genres);
-      selectOption.textContent = genres;
-      obj.appendChild(selectOption);
-    });
-  }
-filterGenres(films, select);  
-
-function filterFilms(array, obj){
-   obj.innerHTML = "";
-  
-    array.forEach(movies =>{
-      let moviesItem = document.createElement("li");
-      moviesItem.classList.add("list-item");
-      obj.appendChild(moviesItem);
-
-      let moviesItemBodyId = document.createElement("time");
-      moviesItemBodyId.classList.add("list-item-id");
-      moviesItemBodyId.textContent = movies.id;
-      moviesItem.appendChild(moviesItemBodyId);
-
-      let moviesItemImg = document.createElement("img");
-      moviesItemImg.classList.add("list-item-img");
-      moviesItemImg.setAttribute("src", movies.poster);
-      moviesItem.appendChild(moviesItemImg);
-
-      let moviesItemBody = document.createElement("div");
-      moviesItemBody.classList.add("list-item-body");
-      moviesItem.appendChild(moviesItemBody);
-
-      let moviesItemBodyTitle = document.createElement("h3");
-      moviesItemBodyTitle.textContent = movies.title;
-      moviesItemBodyTitle.classList.add("list-item-body-title");
-      moviesItemBody.appendChild(moviesItemBodyTitle);
-
-      let moviesBtnContainer = document.createElement("ol");
-      moviesBtnContainer.classList.add("movies-btn-container");
-      moviesItemBody.appendChild(moviesBtnContainer);
-
-      let moviesMoreBtn = document.createElement("li");
-      moviesMoreBtn.classList.add("movies-more-btn");
-      moviesMoreBtn.dataset.moviesMoreBtnId = movies.id;
-      moviesMoreBtn.textContent = "More";
-      moviesBtnContainer.appendChild(moviesMoreBtn);
-
-      let moviesTopBtn = document.createElement("li");
-      moviesTopBtn.classList.add("movies-top-btn");
-      moviesTopBtn.dataset.moviesTopBtnId = movies.id;
-      moviesTopBtn.textContent = "Bookmark";
-      moviesBtnContainer.appendChild(moviesTopBtn);
-
-      let moviesDeleteBtn = document.createElement("li");
-      moviesDeleteBtn.classList.add("movies-delete-btn");
-      moviesDeleteBtn.dataset.moviesDeleteBtnId = movies.id;
-      moviesDeleteBtn.textContent = "Delete";
-      moviesBtnContainer.appendChild(moviesDeleteBtn);
-    });
-  }
-  filterFilms(films, moviesList);
-
-searchForm.addEventListener("submit", function(evt){
-      evt.preventDefault();
-      let inputval = searchInput.value;
-      searchInput.value = "";
-
-      let filterMovies = films.filter(object => object.title.includes(inputval));
-      filterFilms(filterMovies, moviesList);
 });
 
-select.addEventListener("change", function(evt){
-   let selectVal = select.value;
-   
-    let filteredGenres =  films.filter(object => object.genres.includes(selectVal));
-    filterFilms(filteredGenres, moviesList);
-
-    if(selectVal == "All genres"){
-        filterFilms(films, moviesList);
-    }
-})
-
-sort.addEventListener("change", evt => {
-  let sortVal = sort.value;
-   
-  if(sortVal == "id"){
-    const byId = films.sort((a,b) => {
-     return a.id - b.id;
-  }
-  );
-  
-  filterFilms(byId, moviesList);
-  }
-
-  if(sortVal == "name"){
-    const byName = films.sort((a,b) => {
-      if(b.title > a.title){
-          return -1
-      }
-  }
-  );
-  
-  filterFilms(byName, moviesList);
-  }
-});
 
 header.addEventListener("click", evt =>{
   if(evt.target.matches(".deleted-films-container")){
     filterDeletedFilms(deletedFilmArr, moviesList);
     window.localStorage.setItem("deletedFilm" , JSON.stringify(deletedFilmArr));
+    selectFunc(deletedFilmArr, filterDeletedFilms);
+    sortFilm(deletedFilmArr, filterDeletedFilms);
+    searchFunc(deletedFilmArr, filterDeletedFilms);
+    
   };
 
   if(evt.target.matches(".bookmark-films-container")){
     filterBookmarks(bookmarks, moviesList);
+    selectFunc(bookmarks, filterBookmarks);
+    sortFilm(bookmarks, filterBookmarks);
+    searchFunc(bookmarks, filterBookmarks);
+    
   };
-})
+});
+
+filterGenres(films, select);  
+filterFilms(films, moviesList);
+
+searchFunc(films, filterFilms);
+selectFunc(films, filterFilms);
+sortFilm(films, filterFilms);

@@ -1,8 +1,8 @@
-var filmes = [
+let filmes = [
    {
       id: "287947",
       title: "Shazam!",
-      url: "https://youtu.be/zTfj4J5HDIA",
+      url: "https://youtu.be/Y5I4TA0yhr4",
       poster: "https://image.tmdb.org/t/p/w500/xnopI5Xtky18MPhK40cZAGAOVeV.jpg",
       overview:
          "A boy is given the ability to become an adult superhero in times of need with a single magic word.",
@@ -152,7 +152,7 @@ var filmes = [
    {
       id: "537915",
       title: "After",
-      url: "https://youtu.be/zTfj4J5HDIA",
+      url: "https://youtu.be/Y5I4TA0yhr4",
       poster: "https://image.tmdb.org/t/p/w500/bk8LyaMqUtaQ9hUShuvFznQYQKR.jpg",
       overview:
          "A young woman falls for a guy with a dark secret and the two embark on a rocky relationship.",
@@ -441,7 +441,7 @@ var filmes = [
    {
       id: "424694",
       title: "Bohemian Rhapsody",
-      url: "https://youtu.be/zTfj4J5HDIA",
+      url: "https://youtu.be/Y5I4TA0yhr4",
       poster: "https://image.tmdb.org/t/p/w500/lHu1wtNaczFPGFDTrjCSzeLPTKN.jpg",
       overview:
          "Singer Freddie Mercury, guitarist Brian May, drummer Roger Taylor and bass guitarist John Deacon take the music world by storm when they form the rock 'n' roll band Queen in 1970. Hit songs become instant classics. When Mercury's increasingly wild lifestyle starts to spiral out of control, Queen soon faces its greatest challenge yet – finding a way to keep the band together amid the success and excess.",
@@ -449,3 +449,17 @@ var filmes = [
       genres: ["Music", "Documentary"],
    },
 ];
+
+let deleted = [];
+let bookmarked = [];
+
+const localFilms = JSON.parse(window.localStorage.getItem("film"));
+const films = localFilms || filmes;
+
+const localDeletedFilms = JSON.parse(window.localStorage.getItem("deletedFilm"));
+const deletedFilmArr = localDeletedFilms || [];
+
+const localBookmarkedFilms = JSON.parse(window.localStorage.getItem("bookmarkedFilm"));
+const bookmarks = localBookmarkedFilms || [];
+
+let modalArr = [];
